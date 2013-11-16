@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "One-click Kittens",
-  "description": "This extension demonstrates a 'browser action' with kittens.",
+  "name": "Always Smile on Amazon",
+  "description": "This extension redirects all you to smile.amazon.com whenever you access www.amazon.com",
   "version": "1.0",
 
   "browser_action": {
@@ -10,6 +10,9 @@
     "default_popup": "popup.html"
   },
   "permissions": [
-    "https://secure.flickr.com/"
+    "http://amazon.com/"
+    "https://amazon.com/"
+    "http://www.amazon.com/"
+    "https://www.amazon.com/"
   ]
 }
