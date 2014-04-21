@@ -124,7 +124,7 @@ AlwaysSmileAmazon.prototype.getParamsFromElement = function(element)
 
 AlwaysSmileAmazon.prototype.onTabUpdated = function(tabId, changeInfo, tab) {
     var anchor = this.getElementFromUrl(tab.url);
-    if (anchor.hostname.match(/\.amazon.com$/i)) {
+    if (anchor.hostname.match(/^((www)|(smile)).amazon.com$/i)) {
         chrome.pageAction.show(tabId);
     } else {
         chrome.pageAction.hide(tabId);
