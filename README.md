@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/aawc/AlwaysSmileAmazon.svg?branch=master)](https://travis-ci.org/aawc/AlwaysSmileAmazon)
-
 AlwaysSmileAmazon
 =================
 
@@ -7,3 +5,5 @@ AlwaysSmileAmazon is a Chrome extension that redirects the user to the Amazon Sm
 So the user gets some good karma (without paying an extra cent), the charity gets the money, and Amazon.com gets the user's order. Win-win!
 
 I donate to the `Charity:Water` and encourage you to do the same.
+
+[![Build Status](https://travis-ci.org/aawc/AlwaysSmileAmazon.svg?branch=master)](https://travis-ci.org/aawc/AlwaysSmileAmazon)
