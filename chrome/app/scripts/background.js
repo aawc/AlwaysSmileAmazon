@@ -10,6 +10,13 @@
  */
 function AlwaysSmileAmazon() {
     /*
+     * @const{String}
+     * The name of the GET argument to detect if a redirect is already being
+     * made.
+     */
+    this.REDIRECT_PARAMETER = 'redirect';
+
+    /*
      * If redirectRequest is true, the web requests to Amazon Smile page.
      * It is set by default but the user can disable it by clicking on the icon
      * in the URL bar.
@@ -36,11 +43,16 @@ function AlwaysSmileAmazon() {
      * Show the page action icon in the browser omnibox to enable/disable the
      * redirect.
      */
+/*jshint unused:false */
     chrome.tabs.onUpdated.addListener(function (tabId) {
+        console.log(JSON.stringify(tabId));
+        chrome.tabs.get(tabId, function (tab) {
+            console.log(JSON.stringify(tabId));
+        });
         chrome.pageAction.show(tabId);
     });
+/*jshint unused:true */
 }
-
 
 /**
  * Gets called every time the browser is about to send a web request out.
@@ -53,21 +65,62 @@ function AlwaysSmileAmazon() {
  */
 AlwaysSmileAmazon.prototype.onBeforeRequest = function(details) {
     if (this.redirectRequest && !this.ignoreRequest(details)) {
-        console.log('onBeforeRequest: ' + JSON.stringify(details));
-        details.url = details.url.replace(/www/i, 'smile');
-        console.log('new URL: ' + JSON.stringify(details.url));
-        return {redirectUrl: details.url};
+        var anchor = this.getElementFromUrl(details.url);
+        anchor.hostname = anchor.hostname.replace(/^www/i, 'smile');
+        return {redirectUrl: anchor.href};
     }
 };
 
 AlwaysSmileAmazon.prototype.ignoreRequest = function(details) {
     var method = details.method;
     var requestType = details.type;
-    var alreadyRedirecting = details.url.match(/redirect=true/i);
+    var anchorElement = this.getElementFromUrl(details.url);
+    var params = this.getParamsFromElement(anchorElement);
+    var alreadyRedirecting = params.hasOwnProperty(this.REDIRECT_PARAMETER) &&
+        params[this.REDIRECT_PARAMETER].toUpperCase() === 'TRUE';
 
     return method.toUpperCase() !== 'GET' ||
-      requestType.toUpperCase() !== 'MAIN_FRAME' ||
-      alreadyRedirecting;
+        requestType.toUpperCase() !== 'MAIN_FRAME' ||
+        alreadyRedirecting;
+};
+
+/**
+ * Returns an anchor element that points to the given URL.
+ * This is done to parse the URL and get individual components.
+ * @this {AlwaysSmileAmazon}
+ * @param {string} url The URL to which the element should point to.
+ */
+AlwaysSmileAmazon.prototype.getElementFromUrl = function(url)
+{
+    var anchorElement = document.createElement('a');
+    anchorElement.href = url;
+    return anchorElement;
+};
+
+/**
+ * Get a dictionary of the GET parameters and their value in the URL that the
+ * given anchor element points to.
+ * @this {AlwaysSmileAmazon}
+ * @param {Object} element An anchor element that points to the URL being
+ *     requested.
+ * @return {Object.<String, String>} A dictionary of GET parameters in the
+ *     URL.
+ */
+AlwaysSmileAmazon.prototype.getParamsFromElement = function(element)
+{
+    var params = {};
+    if (element.search && element.search.length > 1) {
+        var parts = element.search.substring(1);
+        var vars = parts.split('&');
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split('=');
+            var key = decodeURIComponent(pair[0]);
+            var value = decodeURIComponent(pair[1] ? pair[1] : '');
+            params[key] = value;
+        }
+    }
+
+    return params;
 };
 
 /*jshint unused:false */
