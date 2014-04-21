@@ -36,22 +36,13 @@ function AlwaysSmileAmazon() {
      * Add a listener function to each outgoing request. That way, when a request
      * that we are interested in is being made, we can cancel/modify it.
      */
-    chrome.pageAction.onClicked.addListener(
-        this.onIconClicked.bind(this));
+    chrome.pageAction.onClicked.addListener(this.onIconClicked.bind(this));
 
     /*
      * Show the page action icon in the browser omnibox to enable/disable the
      * redirect.
      */
-/*jshint unused:false */
-    chrome.tabs.onUpdated.addListener(function (tabId) {
-        console.log(JSON.stringify(tabId));
-        chrome.tabs.get(tabId, function (tab) {
-            console.log(JSON.stringify(tabId));
-        });
-        chrome.pageAction.show(tabId);
-    });
-/*jshint unused:true */
+    chrome.tabs.onUpdated.addListener(this.onTabUpdated.bind(this));
 }
 
 /**
@@ -121,6 +112,15 @@ AlwaysSmileAmazon.prototype.getParamsFromElement = function(element)
     }
 
     return params;
+};
+
+AlwaysSmileAmazon.prototype.onTabUpdated = function(tabId, changeInfo, tab) {
+    var anchor = this.getElementFromUrl(tab.url);
+    if (anchor.hostname.match(/\.amazon.com$/i)) {
+        chrome.pageAction.show(tabId);
+    } else {
+        chrome.pageAction.hide(tabId);
+    }
 };
 
 /*jshint unused:false */
