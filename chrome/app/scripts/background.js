@@ -65,14 +65,22 @@ AlwaysSmileAmazon.prototype.onBeforeRequest = function(details) {
 AlwaysSmileAmazon.prototype.ignoreRequest = function(details) {
     var method = details.method;
     var requestType = details.type;
-    var anchorElement = this.getElementFromUrl(details.url);
-    var params = this.getParamsFromElement(anchorElement);
+
+    var anchor = this.getElementFromUrl(details.url);
+    var params = this.getParamsFromElement(anchor);
     var alreadyRedirecting = params.hasOwnProperty(this.REDIRECT_PARAMETER) &&
         params[this.REDIRECT_PARAMETER].toUpperCase() === 'TRUE';
 
+    var requestPath = anchor.pathname;
+    var dpRegEx = /\/dp\//;
+    var gpRegex = /\/gp\/product\//;
+    var isProductPage = requestPath.match(dpRegEx) ||
+        requestPath.match(gpRegex);
+
     return method.toUpperCase() !== 'GET' ||
         requestType.toUpperCase() !== 'MAIN_FRAME' ||
-        alreadyRedirecting;
+        alreadyRedirecting ||
+        !isProductPage;
 };
 
 /**
