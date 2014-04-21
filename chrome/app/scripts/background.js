@@ -126,15 +126,31 @@ AlwaysSmileAmazon.prototype.onTabUpdated = function(tabId, changeInfo, tab) {
     var anchor = this.getElementFromUrl(tab.url);
     if (anchor.hostname.match(/^((www)|(smile)).amazon.com$/i)) {
         chrome.pageAction.show(tabId);
+        this.updateIcon(tabId);
     } else {
         chrome.pageAction.hide(tabId);
     }
 };
 
-/*jshint unused:false */
 AlwaysSmileAmazon.prototype.onIconClicked = function(tab) {
     this.redirectRequest = !this.redirectRequest;
+    this.updateIcon(tab.id);
+    if (this.redirectRequest) {
+        chrome.tabs.reload(tab.id);
+    }
 };
-/*jshint unused:true */
+
+AlwaysSmileAmazon.prototype.updateIcon = function(tabId) {
+    var enabledOrDisabled = !!this.redirectRequest ? 'enabled' : 'disabled';
+    var iconDictionary = {};
+    var iconSizes = [19, 38];
+    for (var i = 0; i < iconSizes.length; i++) {
+        var iconSize = iconSizes[i];
+        var iconPath = enabledOrDisabled + '-' + iconSize + '.png';
+        iconDictionary[iconSize] = 'images/icon-' + iconPath;
+    }
+    console.log(JSON.stringify(iconDictionary));
+    chrome.pageAction.setIcon({path: iconDictionary, tabId: tabId});
+};
 
 new AlwaysSmileAmazon();
