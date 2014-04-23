@@ -1,6 +1,6 @@
 /**
  * @fileoverview Background javascript for AlwaysSmileAmazon.
- * @author khaneja+aas@gmail.com (Varun Khaneja)
+ * @author khaneja+asa@gmail.com (Varun Khaneja)
  */
 
 'use strict';
